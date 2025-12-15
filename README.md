@@ -1,2 +1,2 @@
-# College-Projects
-Collection of my School Projects
+# Project-Portfolio
+Collection of my Programming Projects
