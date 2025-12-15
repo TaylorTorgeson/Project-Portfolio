@@ -1,0 +1,135 @@
+# Taylor Torgeson
+
+def main():
+
+    rooms = { # The dictionary that represents the map of the game
+        'Jail Cell': {'North': 'hazard', 'East': 'item', 'South': 'hazard', 'West': 'item'},
+        'Corridor': {'North': 'Office', 'East': 'Break Room', 'South': 'Cafeteria', 'West': 'hazard'},
+        'Office': {'North': 'hazard', 'East': 'hazard', 'South': 'hazard', 'West': 'hazard'},
+        'Break Room': {'North': 'item', 'East': 'item', 'South': 'hazard', 'West': 'Corridor'},
+        'Cafeteria': {'North': 'Corridor', 'East': 'Maintenance Closet', 'South': 'hazard', 'West': 'Kitchen'},
+        'Kitchen': {'North': 'hazard', 'East': 'Cafeteria', 'South': 'hazard', 'West': 'item'},
+        'Maintenance Closet': {'North': 'hazard', 'East': 'hazard', 'South': 'item', 'West': 'Cafeteria'},
+        'Exit': {'North': 'Cafeteria'}
+    }
+
+    room_details = {
+        'Jail Cell': 'jail',
+        'Corridor': 'hello',
+        'Office': 'off',
+        'Break Room': 'brea',
+        'Cafeteria': 'caf',
+        'Kitchen': 'kitchen',
+        'Maintenance Closet': 'clos',
+        'Exit': ''
+    }
+
+    inv_completion = 0 # Inventory completion check Variable
+    current_room = 'Jail Cell'  # Variable to control the current room of the player
+    inventory = [] # Representation of the user's inventory
+
+
+    def display():
+        if current_room == 'Jail Cell':
+            print('you are in your Jail Cell and need to escape')
+        else:
+            print('you are in the', current_room, 'and need to find what was mentioned in the Note to escape without waking the guards')
+        print(room_details[current_room])
+        print('Current Inventory', inventory)
+
+    def item_handling(current, inv_comp):
+        if current == 'Jail Cell':
+            if movement_request == 'East' and '1' not in inventory:
+                print('item 1')
+                inventory.append('1')
+                inv_comp = 0
+            elif movement_request == 'West' and '2' not in inventory:
+                print('item 2')
+                inventory.append('2')
+                inv_comp = 0
+        elif current == 'Break Room':
+            if movement_request == 'East' and '3' not in inventory:
+                print('item 3')
+                inventory.append('3')
+                inv_comp = 0
+            elif movement_request == 'North' and '4' not in inventory:
+                print('item 4')
+                inventory.append('4')
+                inv_comp = 0
+        elif current == 'Kitchen' and '5' not in inventory:
+            print('item 5')
+            inventory.append('5')
+            inv_comp = 0
+        elif current == 'Maintenance Closet' and '6' not in inventory:
+            print('item 6')
+            inventory.append('6')
+            inv_comp = 0
+            print(inv_comp)
+        if inventory == ['1', '2', '3', '4', '5', '6']:
+            inv_comp = 1
+            print(inv_comp)
+        else:
+            return inv_comp
+
+
+
+
+    def hazard_handling(current_haz, invent, inv_comp):
+        if current_haz == 'Jail Cell' and movement_request == 'North':
+            print('While trying to tug on the window, it popped out and fell to the ground, but it was to far away for anyone to hear.')
+            return 'Jail Cell', invent, 0
+        elif current_haz == 'Jail Cell' and movement_request == 'South' and '1' not in invent or '2' not in invent:
+            print('Trying to force the door open will only get you caught, but maybe there is something that can help you out in the room.')
+            return 'Jail Cell', invent, 0
+        elif current_haz == 'Jail Cell' and movement_request == 'South' and '1'  in invent and '2' in invent:
+            return 'Corridor', ['1', '2'], 0
+        elif current_haz == 'Corridor':
+            print('lost fire alarm')
+            return 'Jail Cell', ['1','2'], 0
+        elif current_haz == 'Office':
+            print('lost guard room office')
+            return 'Jail Cell', ['1','2'], 0
+        elif current_haz == 'Break Room':
+            print('lost cabinet')
+            return 'Jail Cell', ['1','2'], 0
+        elif current_haz == 'Kitchen':
+            if movement_request == 'North':
+                print('lost dishes')
+                return 'Jail Cell', ['1','2'], 0
+            elif movement_request == 'South':
+                print('lost stove')
+                return 'Jail Cell', ['1','2'], 0
+        elif current_haz == 'Maintenance Closet':
+            if movement_request == 'North':
+                print('lost mop bucket')
+                return 'Jail Cell', ['1','2'], 0
+            elif movement_request == 'West':
+                print('lost shelve')
+                return 'Jail Cell', ['1','2'], 0
+        elif current_haz == 'Cafeteria' and inv_comp == 0:
+            print('no code')
+            return 'Jail Cell', ['1','2'], 0
+        elif current_haz == 'Cafeteria' and inv_comp == 1:
+            return 0 #'Exit' #, ['1', '2', '3', '4', '5', '6'], 0
+
+    while current_room != 'Exit': # Loop to continue the game until Player enters 'Exit'
+        display()  # Current room display
+        movement_request = input('what direction would you like to go in? ') # the player input variable and request
+        if movement_request in rooms[current_room]:  # input validation to detect correct or incorrect user inputs
+            if rooms[current_room][movement_request] == 'item':
+                inv_completion = item_handling(current_room, inv_completion)
+            elif rooms[current_room][movement_request] == 'hazard':
+                current_room, inventory, inv_completion = hazard_handling(current_room, inventory, inv_completion)
+            else:
+                current_room = rooms[current_room][movement_request]
+        elif movement_request == 'Exit Game':
+            current_room = 'Exit'
+        else:
+            if current_room == 'Jail Cell' and movement_request == 'South':
+                print('You cant just break through the door')
+                current_room = 'Jail Cell'
+            else:
+                print('Please select a different valid direction (North, East, South, West, or Exit)') # Error handling in case an incorrect input is entered
+    print('you have exited!')
+
+main()
